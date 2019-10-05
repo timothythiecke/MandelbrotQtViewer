@@ -1,4 +1,4 @@
-# Based on code from https://pythonprogramminglanguage.com/pyqt5-hello-world/
+# Qt window code based on https://pythonprogramminglanguage.com/pyqt5-hello-world/
 
 import sys
 import PyQt5.QtGui
@@ -9,12 +9,12 @@ from PyQt5.QtCore import QSize
 
 
 
-def mandleInit(x, y, maxIterations):
+def mandleInit(x, y, width, height, maxIterations):
     # Need to scale input to -2.5 -> 1 for x
     # and for y -1 -> 1
     
-    xScaled = -2.5 + (3.5*(x/640))
-    yScaled = -1 + (2*(y/480)) # TODO: numbers need to be global or shared
+    xScaled = -2.5 + (4*(x/width))
+    yScaled = -(-2 + (4*(y/height))) # TODO: numbers need to be global or shared
     return mandleRec(complex(xScaled, yScaled), complex(0, 0), 0, maxIterations)
 
 
@@ -41,26 +41,33 @@ class MandelbrotWindow(QMainWindow): # Python inheritance
     def __init__(self):
         QMainWindow.__init__(self)
 
-        self.setMinimumSize(QSize(640, 480))    
+        width = int(sys.argv[2])
+        height = int(sys.argv[3])
+        self.setMinimumSize(QSize(width, height))    
         self.setWindowTitle("MandelbrotQtViewer") 
         
-        pixmap = QPixmap(640, 480).toImage()
+        pixmap = QPixmap(width, height).toImage()
         pixmap.fill(PyQt5.QtGui.QColor.fromRgb(255, 255, 255))
         
         maxSteps = int(sys.argv[1])
-        for row in range(480):
-            for col in range(640):
-                steps = mandleInit(col, row, maxSteps)
-                pixmap.setPixelColor(col, row, PyQt5.QtGui.QColor.fromRgb(255*(1-(steps/maxSteps)), 0, 0)) # First element is x, second is y
-        
-        #pixmap.setPixelColor(1, 1, PyQt5.QtGui.QColor.fromRgb(255, 255, 0))
-        # ScanLine(0) return first pixel data
-        #ptr = pixmap.scanLine(0) # Scanline
-        #ptr2 = pixmap.bits()
-        # bits() == scanLine(0)
-        #print(ptr, ptr2)
-        # setPixelColor is less efficient, but easier to work with
+        print (maxSteps)
+        for row in range(height):
+            for col in range(width):
+                steps = mandleInit(col, row, width, height, maxSteps)
+                colorValue = 255*(1-(steps/maxSteps))
+                inverted = 255 - colorValue
 
+                red = 0
+                green = 0
+                blue = 0
+
+                if steps != maxSteps:
+                    red = inverted
+                    green = inverted
+                    blue = colorValue
+
+                pixmap.setPixelColor(col, row, PyQt5.QtGui.QColor.fromRgb(red, green, blue))
+    
         palette = QPalette()
         palette.setBrush(PyQt5.QtGui.QPalette.Background, PyQt5.QtGui.QBrush(pixmap))
         self.setPalette(palette)
@@ -72,3 +79,11 @@ if __name__ == "__main__":
     mainWin = MandelbrotWindow()
     mainWin.show()
     sys.exit( app.exec_() )
+
+
+# ScanLine(0) return first pixel data
+#ptr = pixmap.scanLine(0) # Scanline
+#ptr2 = pixmap.bits()
+# bits() == scanLine(0)
+#print(ptr, ptr2)
+# setPixelColor is less efficient, but easier to work with
