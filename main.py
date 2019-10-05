@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QWidget
 from PyQt5.QtGui import QPixmap, QPalette, QImage, QColor
 from PyQt5.QtCore import QSize   
 
+
+
 def mandleInit(x, y, maxIterations):
     # Need to scale input to -2.5 -> 1 for x
     # and for y -1 -> 1
@@ -14,6 +16,8 @@ def mandleInit(x, y, maxIterations):
     xScaled = -2.5 + (3.5*(x/640))
     yScaled = -1 + (2*(y/480)) # TODO: numbers need to be global or shared
     return mandleRec(complex(xScaled, yScaled), complex(0, 0), 0, maxIterations)
+
+
 
 def mandleRec(c, z, it, maxIterations):
     if it < maxIterations:
@@ -30,6 +34,7 @@ def mandleRec(c, z, it, maxIterations):
         return mandleRec(c, tempZ, it + 1, maxIterations)
 
     return it
+
 
 
 class MandelbrotWindow(QMainWindow): # Python inheritance
@@ -59,6 +64,8 @@ class MandelbrotWindow(QMainWindow): # Python inheritance
         palette = QPalette()
         palette.setBrush(PyQt5.QtGui.QPalette.Background, PyQt5.QtGui.QBrush(pixmap))
         self.setPalette(palette)
+
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
